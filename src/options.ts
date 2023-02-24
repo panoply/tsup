@@ -3,7 +3,6 @@ import type { InputOption } from 'rollup'
 import { MarkRequired } from 'ts-essentials'
 import type { Plugin } from './plugin'
 import type { TreeshakingStrategy } from './plugins/tree-shaking'
-import type { MinifyOptions } from 'terser'
 
 export type Format = 'cjs' | 'esm' | 'iife'
 
@@ -44,40 +43,6 @@ export type BannerOrFooter =
     }
   | ((ctx: { format: Format }) => { js?: string; css?: string } | undefined)
 
-export type BrowserTarget =
-  | 'chrome'
-  | 'deno'
-  | 'edge'
-  | 'firefox'
-  | 'hermes'
-  | 'ie'
-  | 'ios'
-  | 'node'
-  | 'opera'
-  | 'rhino'
-  | 'safari'
-export type BrowserTargetWithVersion =
-  | `${BrowserTarget}${number}`
-  | `${BrowserTarget}${number}.${number}`
-  | `${BrowserTarget}${number}.${number}.${number}`
-export type EsTarget =
-  | 'es3'
-  | 'es5'
-  | 'es6'
-  | 'es2015'
-  | 'es2016'
-  | 'es2017'
-  | 'es2018'
-  | 'es2019'
-  | 'es2020'
-  | 'es2021'
-  | 'es2022'
-  | 'esnext'
-
-export type Target = BrowserTarget | BrowserTargetWithVersion | EsTarget
-
-export type Entry = string[] | Record<string, string>
-
 /**
  * The options available in tsup.config.ts
  * Not all of them are available from CLI flags
@@ -88,8 +53,8 @@ export type Options = {
   /**
    * @deprecated Use `entry` instead
    */
-  entryPoints?: Entry
-  entry?: Entry
+  entryPoints?: BuildOptions['entryPoints']
+  entry?: BuildOptions['entryPoints']
   /**
    * Output different formats to different folder instead of using different extensions
    */
@@ -99,9 +64,8 @@ export type Options = {
    *
    * default to `node14`
    */
-  target?: Target | Target[]
-  minify?: boolean | 'terser'
-  terserOptions?: MinifyOptions
+  target?: string | string[]
+  minify?: boolean
   minifyWhitespace?: boolean
   minifyIdentifiers?: boolean
   minifySyntax?: boolean

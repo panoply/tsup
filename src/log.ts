@@ -1,5 +1,3 @@
-import util from 'util'
-import { parentPort, isMainThread } from 'worker_threads'
 import * as colors from 'colorette'
 
 type LOG_TYPE = 'info' | 'success' | 'error' | 'warn'
@@ -11,10 +9,10 @@ export const colorize = (type: LOG_TYPE, data: any, onlyImportant = false) => {
     type === 'info'
       ? 'blue'
       : type === 'error'
-      ? 'red'
-      : type === 'warn'
-      ? 'yellow'
-      : 'green'
+        ? 'red'
+        : type === 'warn'
+          ? 'yellow'
+          : 'green'
   return colors[color](data)
 }
 
@@ -70,34 +68,20 @@ export const createLogger = (name?: string) => {
       type: 'info' | 'success' | 'error' | 'warn',
       ...data: unknown[]
     ) {
-      const args = [
-        makeLabel(name, label, type),
-        ...data.map((item) => colorize(type, item, true)),
-      ]
       switch (type) {
         case 'error': {
-          if (!isMainThread) {
-            parentPort?.postMessage({
-              type: 'error',
-              text: util.format(...args),
-            })
-            return
-          }
-
-          return console.error(...args)
+          return console.error(
+            makeLabel(name, label, type),
+            ...data.map((item) => colorize(type, item, true))
+          )
         }
         default:
           if (silent) return
 
-          if (!isMainThread) {
-            parentPort?.postMessage({
-              type: 'log',
-              text: util.format(...args),
-            })
-            return
-          }
-
-          console.log(...args)
+          console.log(
+            makeLabel(name, label, type),
+            ...data.map((item) => colorize(type, item, true))
+          )
       }
     },
   }
